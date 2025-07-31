@@ -1,6 +1,7 @@
+// components/CalendarTimeSlot.jsx
 import { timeSlots } from "../data/timeSlot";
 
-export function CalendarTimeSlot({ date, onTimeSelect, selectedTime }) {
+export default function CalendarTimeSlot({ date, onTimeSelect, selectedTime }) {
   const formattedDate = new Date(date).toLocaleDateString("en-US", {
     weekday: "long",
     year: "numeric",

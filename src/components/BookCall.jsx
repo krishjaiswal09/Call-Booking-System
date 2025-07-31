@@ -7,11 +7,21 @@ import { IoIosArrowDropdown } from "react-icons/io";
 import { dummyClients } from "../data/client.js";
 import { timeSlots } from "../data/timeSlot";
 
-export function BookCall() {
+export function BookCall({ selectedDate }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState(null);
   const [showClients, setShowClients] = useState(false);
   const [selectedTime, setSelectedTime] = useState(null);
+
+  // Format the date for display in the modal
+  const formatDateForDisplay = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "numeric",
+      day: "numeric",
+      year: "numeric"
+    });
+  };
 
   return (
     <div>
@@ -93,14 +103,14 @@ export function BookCall() {
               ))}
             </div>
 
-            {/* Date Section */}
+            {/* Date Section - Now shows synchronized date */}
             <div className="mb-4">
               <div className="flex items-center gap-2 mb-2 text-sm font-medium text-gray-700">
                 <CiCalendar size={20} />
                 <span className="px-3 py-1 bg-gray-100 rounded">Date</span>
               </div>
               <div className="border rounded-md px-3 py-2 text-sm bg-white text-gray-800 shadow-sm">
-                7/30/2025
+                {formatDateForDisplay(selectedDate)}
               </div>
             </div>
 

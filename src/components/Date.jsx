@@ -1,19 +1,21 @@
 // components/Date.jsx
 import React, { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { CalendarTimeSlot } from "./CalendarTimeSlot";
+import CalendarTimeSlot from "./CalendarTimeSlot";
 
-export function DateAndNavigation() {
-  const [selectedDate, setSelectedDate] = useState("2025-07-30");
+export function DateAndNavigation({ selectedDate, onDateChange }) {
+  const [selectedTime, setSelectedTime] = useState(null);
 
   const handleDateChange = (direction) => {
     const current = new Date(selectedDate);
     current.setDate(current.getDate() + direction);
-    setSelectedDate(current.toISOString().slice(0, 10));
+    // Call the parent's date change handler
+    onDateChange(current.toISOString().slice(0, 10));
   };
 
   const onInputChange = (e) => {
-    setSelectedDate(e.target.value);
+    // Call the parent's date change handler
+    onDateChange(e.target.value);
   };
 
   return (
@@ -47,7 +49,11 @@ export function DateAndNavigation() {
       </div>
 
       {/* Time Slots for Selected Date */}
-      <CalendarTimeSlot date={selectedDate} />
+      <CalendarTimeSlot 
+        date={selectedDate} 
+        onTimeSelect={setSelectedTime}
+        selectedTime={selectedTime}
+      />
     </div>
   );
 }
