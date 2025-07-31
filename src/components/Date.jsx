@@ -1,21 +1,39 @@
-// components/Date.jsx
 import React, { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import CalendarTimeSlot from "./CalendarTimeSlot";
+import {convertTimeToMinutes} from "../utils/timeHelpers"
 
 export function DateAndNavigation({ selectedDate, onDateChange }) {
   const [selectedTime, setSelectedTime] = useState(null);
 
-  const handleDateChange = (direction) => {
-    const current = new Date(selectedDate);
-    current.setDate(current.getDate() + direction);
-    // Call the parent's date change handler
-    onDateChange(current.toISOString().slice(0, 10));
+  // Simple date navigation
+  const changeDate = (days) => {
+    const newDate = new Date(selectedDate);
+    newDate.setDate(newDate.getDate() + days);
+    onDateChange(newDate.toISOString().slice(0, 10));
+    setSelectedTime(null); // Reset selection on date change
   };
 
-  const onInputChange = (e) => {
-    // Call the parent's date change handler
+  const handleDateInput = (e) => {
     onDateChange(e.target.value);
+    setSelectedTime(null);
+  };
+
+  // Clear selected time if it becomes booked
+  const handleBookingUpdate = (bookings) => {
+    if (selectedTime && isTimeBooked(selectedTime, bookings)) {
+      setSelectedTime(null);
+    }
+  };
+
+  // Simple time booking check
+  const isTimeBooked = (timeSlot, bookings) => {
+    const slotMinutes = convertTimeToMinutes(timeSlot);
+    return bookings.some(booking => {
+      const startMinutes = convertTimeToMinutes(booking.startTime);
+      const endMinutes = startMinutes + booking.callDuration;
+      return slotMinutes >= startMinutes && slotMinutes < endMinutes;
+    });
   };
 
   return (
@@ -25,8 +43,7 @@ export function DateAndNavigation({ selectedDate, onDateChange }) {
         <div className="flex items-center gap-2">
           <button
             className="p-2 rounded hover:bg-gray-200 transition"
-            onClick={() => handleDateChange(-1)}
-            aria-label="Previous Day"
+            onClick={() => changeDate(-1)}
           >
             <ChevronLeft size={20} />
           </button>
@@ -35,24 +52,23 @@ export function DateAndNavigation({ selectedDate, onDateChange }) {
             type="date"
             className="border px-4 py-1 rounded-md text-sm text-center"
             value={selectedDate}
-            onChange={onInputChange}
+            onChange={handleDateInput}
           />
 
           <button
             className="p-2 rounded hover:bg-gray-200 transition"
-            onClick={() => handleDateChange(1)}
-            aria-label="Next Day"
+            onClick={() => changeDate(1)}
           >
             <ChevronRight size={20} />
           </button>
         </div>
       </div>
 
-      {/* Time Slots for Selected Date */}
       <CalendarTimeSlot 
         date={selectedDate} 
-        onTimeSelect={setSelectedTime}
         selectedTime={selectedTime}
+        onTimeSelect={setSelectedTime}
+        onBookingUpdate={handleBookingUpdate}
       />
     </div>
   );
